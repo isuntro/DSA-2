@@ -104,6 +104,7 @@ public class ArrayHashTable<K,V> {
         else
         for(int i = 0; i < counts[hash]; i++){
             if(table[hash][i] == key){
+                System.arraycopy(table[hash],i+1,table[hash],i-1,counts[hash]-i);
                 table[hash][i] = null;
                 size--;
                 counts[hash]--;
