@@ -1,7 +1,11 @@
-package HashTable;
+package Question2;
 
-import java.util.Hashtable;
+import Question1.Matrix;
+
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Created by tiberiusimionvoicu on 14/03/2017.
@@ -58,15 +62,16 @@ public class ArrayHashTable<K,V> {
             }
         }
         else{
+            /*
             for(int i=0; i<length; i++){
                 if(table[hash][i].equals(null)){
                     table[hash][i] = new Entry<>(key,value);
                     break;
                 }
             }
-            /*
+            */
             table[hash][counts[hash]] = new Entry<>(key,value);
-             */
+
             size++;
             counts[hash]++;
         }
@@ -103,11 +108,11 @@ public class ArrayHashTable<K,V> {
         }
         else
         for(int i = 0; i < counts[hash]; i++){
-            if(table[hash][i] == key){
-                System.arraycopy(table[hash],i+1,table[hash],i-1,counts[hash]-i);
+            if(table[hash][i].getKey().equals(key)){
                 table[hash][i] = null;
                 size--;
                 counts[hash]--;
+                System.arraycopy(table[hash],i+1,table[hash],i,counts[hash]-i);
                 return true;
             }
         }
@@ -145,6 +150,67 @@ public class ArrayHashTable<K,V> {
             return this.value = value;
         }
     }
+    public static int[] testData(int n){
+        int[] numbers = new int[n];
+        Random rad=new Random();
+        for(int j=0;j<n;j++){
+            numbers[j]=Math.abs(rad.nextInt());
+        }
+        return numbers;
+    }
+    public static double[] experiment(ArrayHashTable aTable, int reps, int n){
+        int[] results;
+        int sum = 0;
+        int sumSquared = 0;
+        double[] dataRes = new double[4];
+        results = testData(n);
+        for(int i=0; i<reps; i++) {
+            long t1=System.nanoTime();
 
+            for (int c = 0; c < n; c++) {
+                aTable.add(results[c], c);
+            }
+            for (int c = 0; c < n; c++) {
+                aTable.remove((results[c]));
+            }
+
+            long t2=System.nanoTime()-t1;
+            sum+=(double)t2/100000.0;
+            sumSquared+=(t2/10000.0)*(t2/10000.0);
+        }
+        double mean=sum/reps;
+        double variance=sumSquared/reps-(mean*mean);
+        double stdDev=Math.sqrt(variance);
+        dataRes[0] = n;
+        dataRes[1] = mean;
+        dataRes[2] = variance;
+        dataRes[3] = stdDev;
+
+        return dataRes;
+        }
+    public static void runExperiments(ArrayHashTable aTable) throws IOException {
+        double[] results;
+        int n = 0;
+        while ( n < 50000){
+            if( n < 10000){
+                n += 1000;
+            }
+            else
+                n += 5000;
+            results = experiment(aTable,1001,n);
+            Matrix.writeCsv(results, "tableData1.csv");
+        }
+
+    }
+
+    public static void main(String[] args) {
+
+        ArrayHashTable aTable = new ArrayHashTable();
+        try {
+            runExperiments(aTable);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

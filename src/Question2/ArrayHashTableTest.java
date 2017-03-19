@@ -1,12 +1,11 @@
-package HashTable;
+package Question2;
 
-import static org.junit.Assert.*;
 import java.util.*;
 /**
  * Created by 100125468 on 15/03/2017.
  */
 public class ArrayHashTableTest {
-    int n = 100;
+    int n = 50000;
     ArrayHashTable table = new ArrayHashTable();
     Random rad = new Random();
     int[] numbers = new int[n];
@@ -20,7 +19,9 @@ public class ArrayHashTableTest {
         for(int i=0; i < n ; i++){
             table.add(numbers[i],i);
         }
-
+        for(int i=0; i < n; i++){
+            table.remove(numbers[i]);
+        }
         for (int number : numbers) {
             System.out.println(table.contains(number));
         }

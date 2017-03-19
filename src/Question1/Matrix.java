@@ -1,4 +1,4 @@
-package Matrix;
+package Question1;
 /**
  * Created by tiberiusimionvoicu - 100125468
  * on 10/03/2017.
@@ -11,7 +11,7 @@ public class Matrix {
     private int n;
     private Random rad = new Random();
 
-    /** Constructor creates a Matrix.Matrix from
+    /** Constructor creates a Question1.Question1 from
      *  a 2d array
      *
      * @param m - 2d array
@@ -157,6 +157,7 @@ public class Matrix {
      *  of algorithm findElementD1
      *
      * @param p - number excluded from matrix
+     * @param n - height of matrix(size=n*n)
      */
 
     public void randomD1(int p, int n){
@@ -186,6 +187,7 @@ public class Matrix {
      *  of algorithm findElementD2
      *
      * @param p - number excluded from matrix
+     * @param n - height of matrix(size=n*n)
      */
     public void randomD2(int p, int n){
         // first number is a random one between 0 - 5
