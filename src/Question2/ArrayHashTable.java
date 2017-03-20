@@ -4,6 +4,7 @@ import Question1.Matrix;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 
@@ -149,6 +150,12 @@ public class ArrayHashTable<K,V> {
         public V setValue(V value) {
             return this.value = value;
         }
+        public String toString(){
+            String str = "";
+            str += "Entry Key : " + key;
+            str += "Entry Value : " + value;
+            return str;
+        }
     }
     public static int[] testData(int n){
         int[] numbers = new int[n];
@@ -159,25 +166,42 @@ public class ArrayHashTable<K,V> {
         return numbers;
     }
     public static double[] experiment(ArrayHashTable aTable, int reps, int n){
-        int[] results;
-        int sum = 0;
-        int sumSquared = 0;
-        double[] dataRes = new double[4];
-        results = testData(n);
+        int[] data;
+        double sum = 0,sumSet = 0;
+        double sumSquared = 0,sumSquaredSet = 0;
+
+        double[] dataRes = new double[7];
+        data = testData(n);
+        HashSet testSet = new HashSet(10);
         for(int i=0; i<reps; i++) {
             long t1=System.nanoTime();
 
             for (int c = 0; c < n; c++) {
-                aTable.add(results[c], c);
+                aTable.add(data[c], c);
             }
             for (int c = 0; c < n; c++) {
-                aTable.remove((results[c]));
+                aTable.remove((data[c]));
             }
 
             long t2=System.nanoTime()-t1;
-            sum+=(double)t2/100000.0;
+
+            long t3=System.nanoTime();
+            for (int c = 0; c < n; c++) {
+                testSet.add(data[c]);
+            }
+            for (int c = 0; c < n; c++) {
+                testSet.remove((data[c]));
+            }
+            long t4 = System.nanoTime()-t3;
+
+            sumSet += t4/10000.0;
+            sumSquaredSet += (t4/10000.0)*(t4/ 10000.0);
+            sum += t2/10000.0;
             sumSquared+=(t2/10000.0)*(t2/10000.0);
         }
+        double meanSet = sumSet/reps;
+        double varianceSet = sumSquaredSet/reps-(meanSet*meanSet);
+        double stdDevSet = Math.sqrt(varianceSet);
         double mean=sum/reps;
         double variance=sumSquared/reps-(mean*mean);
         double stdDev=Math.sqrt(variance);
@@ -185,7 +209,9 @@ public class ArrayHashTable<K,V> {
         dataRes[1] = mean;
         dataRes[2] = variance;
         dataRes[3] = stdDev;
-
+        dataRes[4] = meanSet;
+        dataRes[5] = varianceSet;
+        dataRes[6] = stdDevSet;
         return dataRes;
         }
     public static void runExperiments(ArrayHashTable aTable) throws IOException {
@@ -197,20 +223,29 @@ public class ArrayHashTable<K,V> {
             }
             else
                 n += 5000;
-            results = experiment(aTable,1001,n);
+            results = experiment(aTable,1000,n);
             Matrix.writeCsv(results, "tableData1.csv");
         }
 
     }
-
+    public String toString(){
+        String str = "";
+        for(int i=0; i<10; i++){
+            for(int c = 0; c < counts[i]; c++){
+                str += table[i][c];
+            }
+        }
+        return str;
+    }
     public static void main(String[] args) {
-
         ArrayHashTable aTable = new ArrayHashTable();
+
         try {
             runExperiments(aTable);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
 }
