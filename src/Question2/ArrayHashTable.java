@@ -36,45 +36,45 @@ public class ArrayHashTable<K,V> {
      * @return
      */
     public boolean add(K key, V value){
-        int hash = (key.hashCode() % capacity);
-
-        if(table[hash] == null){
-            table[hash] = new Entry[chainSize];
-            table[hash][0] = new Entry<>(key,value);
+        int hashIndex = (key.hashCode() % capacity);
+        int index = -1;
+        if(table[hashIndex] == null){
+            table[hashIndex] = new Entry[chainSize];
+            table[hashIndex][0] = new Entry<>(key,value);
+            for(int i=1; i< table[hashIndex].length; i++){
+                table[hashIndex][i] = null;
+            }
             size++;
-            counts[hash]++;
+            counts[hashIndex]++;
             return true;
         }
         else
-        for(int i = 0; i < counts[hash]; i++){
-            if(table[hash][i].getKey() == key ){
-                return false;
-            }
-        }
-        int length = table[hash].length;
-        if(counts[hash] == length) {
-            if (table[hash][length - 1].getKey() != null) {
-                Entry[] chain = new Entry[length * 2];
-                System.arraycopy(table[hash], 0, chain, 0, length);
-                table[hash] = chain;
-                table[hash][length] = new Entry<>(key, value);
-                size++;
-                counts[hash]++;
-            }
-        }
-        else{
-            /*
-            for(int i=0; i<length; i++){
-                if(table[hash][i].equals(null)){
-                    table[hash][i] = new Entry<>(key,value);
-                    break;
+        for(int i = 0; i < table[hashIndex].length; i++){
+            if(table[hashIndex][i] != null) {
+                if (table[hashIndex][i].getKey() == key) {
+                    return false;
                 }
             }
-            */
-            table[hash][counts[hash]] = new Entry<>(key,value);
-
+            else{
+                index = i;
+            }
+        }
+        if(index != -1){
+            table[hashIndex][index] = new Entry<>(key,value);
             size++;
-            counts[hash]++;
+            counts[hashIndex]++;
+            return true;
+        }
+        int length = table[hashIndex].length;
+        if(counts[hashIndex] == length) {
+            if (table[hashIndex][length - 1].getKey() != null) {
+                Entry[] chain = new Entry[length * 2];
+                System.arraycopy(table[hashIndex], 0, chain, 0, length);
+                table[hashIndex] = chain;
+                table[hashIndex][length] = new Entry<>(key, value);
+                size++;
+                counts[hashIndex]++;
+            }
         }
         return true;
     }
@@ -108,13 +108,19 @@ public class ArrayHashTable<K,V> {
             return false;
         }
         else
-        for(int i = 0; i < counts[hash]; i++){
-            if(table[hash][i].getKey().equals(key)){
-                table[hash][i] = null;
-                size--;
-                counts[hash]--;
-                System.arraycopy(table[hash],i+1,table[hash],i,counts[hash]-i);
-                return true;
+        for(int i = 0; i < table[hash].length; i++){
+            if(table[hash][i] != null) {
+                if (table[hash][i].getKey().equals(key)) {
+                    table[hash][i] = null;
+                    size--;
+                    counts[hash]--;
+                    if(counts[hash] == table[hash].length/2){
+                        Entry[] chain = new Entry[counts[hash]];
+                        System.arraycopy(table[hash],0,chain,0,counts[hash]);
+                        table[hash] = chain;
+                    }
+                    return true;
+                }
             }
         }
         return false;
@@ -194,10 +200,10 @@ public class ArrayHashTable<K,V> {
             }
             long t4 = System.nanoTime()-t3;
 
-            sumSet += t4/10000.0;
-            sumSquaredSet += (t4/10000.0)*(t4/ 10000.0);
-            sum += t2/10000.0;
-            sumSquared+=(t2/10000.0)*(t2/10000.0);
+            sumSet += t4/1000000.0;
+            sumSquaredSet += (t4/1000000.0)*(t4/ 1000000.0);
+            sum += t2/1000000.0;
+            sumSquared+=(t2/1000000.0)*(t2/1000000.0);
         }
         double meanSet = sumSet/reps;
         double varianceSet = sumSquaredSet/reps-(meanSet*meanSet);

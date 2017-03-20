@@ -96,7 +96,6 @@ public class Matrix {
         int index = n-1;
         for(int[] row : A){
             while(index != -1) {
-                //notries++;
                 if(p == row[index]) {
                     System.out.println(" No tries = " + notries + " found no : "+row[index]);
                     return true;
@@ -108,7 +107,6 @@ public class Matrix {
                     break;
             }
         }
-        //System.out.println(" No tries = "+notries);
         return false;
     }
 
