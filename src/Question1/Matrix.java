@@ -9,7 +9,11 @@ import java.util.*;
 public class Matrix {
     private int[][] matrix;
     private int n;
-    private Random rad = new Random();
+    private static Random rad = new Random();
+
+    public Matrix(){
+
+    }
 
     /** Constructor creates a Question1.Question1 from
      *  a 2d array
@@ -158,11 +162,10 @@ public class Matrix {
      * @param n - height of matrix(size=n*n)
      */
 
-    public void randomD1(int p, int n){
+    public static int[][] randomD1(int p, int n ){
         // first number is a random one between 0 - 5
         int number = rad.nextInt(5);
-        this.matrix = new int[n][n];
-        this.n = n;
+        int[][] aMatrix = new int[n][n];
         for(int i=0; i < n; i++){
             for(int c=0; c < n; c++){
                 // increment number with a random number between 0 - 5
@@ -170,13 +173,14 @@ public class Matrix {
                 while(number == p ){
                     number += rad.nextInt(5);
                 }
-                matrix[i][c] = number;
+                aMatrix[i][c] = number;
             }
             // reset number to create a matrix
             // sorted only row-wise
-            number = rad.nextInt(5);
+            number = 0;
         }
 
+        return aMatrix;
     }
 
     /** Method used to generate a random matrix
@@ -187,11 +191,10 @@ public class Matrix {
      * @param p - number excluded from matrix
      * @param n - height of matrix(size=n*n)
      */
-    public void randomD2(int p, int n){
+    public static int[][] randomD2(int p, int n){
         // first number is a random one between 0 - 5
         int number = rad.nextInt(5);
-        this.matrix = new int[n][n];
-        this.n = n;
+        int[][] aMatrix = new int[n][n];
         for(int i=0; i < n; i++){
             for(int c=0; c < n; c++){
                 // increment number with a random number between 0 - 5
@@ -199,26 +202,32 @@ public class Matrix {
                 while(number == p ){
                     number += rad.nextInt(5);
                 }
-                this.matrix[i][c] = number;
+                aMatrix[i][c] = number;
+            }
+            number = 0;
+            while(number < aMatrix[i][0]){
+                number += rad.nextInt(5);
             }
         }
-
+        return aMatrix;
     }
-    public static double[] experiment(int opt, Matrix aMatrix, int n){
+    public static double[] experiment(int opt, int n){
         double[] results = new double[4];
         // int to be searched for
+        int p1 = 5;
         int p = 10;
         int reps = 4000;
         double sum=0,s=0;
         double sumSquared=0;
+        int[][] aMatrix;
         switch(opt){
             case 0:
-                aMatrix.randomD1(p,n);
+                aMatrix = randomD1(p,n);
                 for(int i=0;i<reps;i++){
 
                     long t1=System.nanoTime();
 
-                    findElementD(aMatrix.matrix,n,p);
+                    findElementD(aMatrix,n,p);
 
                     long t2=System.nanoTime()-t1;
                     //Recording it in milli seconds to make it more interpretable
@@ -227,12 +236,12 @@ public class Matrix {
                 }
                 break;
             case 1:
-                aMatrix.randomD1(p,n);
+                aMatrix = randomD1(p,n);
                 for(int i=0;i<reps;i++){
 
                     long t1=System.nanoTime();
 
-                    findElementD1(aMatrix.matrix,n,p);
+                    findElementD1(aMatrix,n,p);
 
                     long t2=System.nanoTime()-t1;
                     //Recording it in milli seconds to make it more interpretable
@@ -241,12 +250,12 @@ public class Matrix {
                 }
                 break;
             case 2:
-                aMatrix.randomD2(p,n);
+                aMatrix = randomD1(p,n);
                 for(int i=0;i<reps;i++){
 
                     long t1=System.nanoTime();
 
-                    findElementD2(aMatrix.matrix,n,p);
+                    findElementD2(aMatrix,n,p1);
 
                     long t2=System.nanoTime()-t1;
                     //Recording it in milli seconds to make it more interpretable
@@ -266,7 +275,7 @@ public class Matrix {
         //        + variance + "\n StDev : \t\t" + stdDev);
         return results;
     }
-    public static void runExperiments(Matrix aMatrix) throws IOException {
+    public static void runExperiments() throws IOException {
         int n = 0;
         double[] exp1;
         double[] exp2;
@@ -280,12 +289,12 @@ public class Matrix {
             }
             else
                 n += 1000;
-            exp1 = experiment(0,aMatrix, n);
-            writeCsv(exp1,"dataD.csv");
-            exp2 = experiment(1,aMatrix, n);
+            //exp1 = experiment(0, n);
+            //writeCsv(exp1,"dataD.csv");
+            exp2 = experiment(1, n);
             writeCsv(exp2,"dataD1.csv");
-            exp3 = experiment(2,aMatrix, n);
-            writeCsv(exp3,"dataD2.csv");
+            //exp3 = experiment(2, n);
+            //writeCsv(exp3,"dataD2.csv");
 
         }
     }
@@ -311,12 +320,16 @@ public class Matrix {
                             {13,15,50,100,110,112,120},
                             {22,27,61,112,119,138,153}  };
         Matrix testMatrix = new Matrix(test);
-        Matrix aMatrix = new Matrix(2);
+        int[][] aMatrix = new int[1][1];
+        /*
         try {
-            runExperiments(aMatrix);
+            runExperiments();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        */
+        Matrix amatrix = new Matrix(randomD2(5,10));
+        System.out.println(amatrix);
 
     }
 }

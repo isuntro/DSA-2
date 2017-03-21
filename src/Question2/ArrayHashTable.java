@@ -31,38 +31,42 @@ public class ArrayHashTable<K,V> {
 
     /**
      *
-     * @param key
+     * key
      * @param value
      * @return
      */
-    public boolean add(K key, V value){
-        int hashIndex = (key.hashCode() % capacity);
+    public boolean add(V value){
+        int hash = value.hashCode();
+        int hashIndex = (hash % capacity);
         int index = -1;
         if(table[hashIndex] == null){
             table[hashIndex] = new Entry[chainSize];
-            table[hashIndex][0] = new Entry<>(key,value);
-            for(int i=1; i< table[hashIndex].length; i++){
-                table[hashIndex][i] = null;
-            }
+            table[hashIndex][0] = new Entry(hash,value);
             size++;
             counts[hashIndex]++;
+            if(table[hashIndex][0] == null){
+                System.out.println(" NULL ELEMENT ADDED");
+            }
             return true;
         }
         else
         for(int i = 0; i < table[hashIndex].length; i++){
             if(table[hashIndex][i] != null) {
-                if (table[hashIndex][i].getKey() == key) {
+                if (table[hashIndex][i].getKey().equals(value)) {
                     return false;
                 }
             }
-            else{
+            else if(index == -1){
                 index = i;
             }
         }
         if(index != -1){
-            table[hashIndex][index] = new Entry<>(key,value);
+            table[hashIndex][index] = new Entry(hash,value);
             size++;
             counts[hashIndex]++;
+            if(table[hashIndex][index] == null){
+                System.out.println(" NULL ELEMENT ADDED");
+            }
             return true;
         }
         int length = table[hashIndex].length;
@@ -71,23 +75,23 @@ public class ArrayHashTable<K,V> {
                 Entry[] chain = new Entry[length * 2];
                 System.arraycopy(table[hashIndex], 0, chain, 0, length);
                 table[hashIndex] = chain;
-                table[hashIndex][length] = new Entry<>(key, value);
+                table[hashIndex][counts[hashIndex]] = new Entry(hash, value);
                 size++;
                 counts[hashIndex]++;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     /**
      *
-     * @param key
      * @return
      */
-    public boolean contains(K key){
-        int hash = key.hashCode() % capacity;
-        for(int c = 0; c<counts[hash]; c++){
-            if(table[hash][c].getKey().equals(key)){
+    public boolean contains(V value){
+        int hashIndex = value.hashCode() % capacity;
+        for(int c = 0; c<counts[hashIndex]; c++){
+            if(table[hashIndex][c].getKey().equals(value)){
                 return true;
             }
         }
@@ -99,25 +103,28 @@ public class ArrayHashTable<K,V> {
      *  CURRENTLY ADD AND CONTAINS WORKING PROPERLY
      *  CHECK IF SHOULD BE AS SPECIFICATION
      *
-     * @param key
      * @return
      */
-    public boolean remove(K key){
-        int hash = key.hashCode() % capacity;
-        if(counts[hash] == 0 ){
+    public boolean remove(V value){
+        int hashIndex = value.hashCode() % capacity;
+        if(counts[hashIndex] == 0 ){
             return false;
         }
         else
-        for(int i = 0; i < table[hash].length; i++){
-            if(table[hash][i] != null) {
-                if (table[hash][i].getKey().equals(key)) {
-                    table[hash][i] = null;
+        for(int i = 0; i < table[hashIndex].length; i++){
+            if(table[hashIndex][i] != null) {
+                if (table[hashIndex][i].getKey().equals(value)) {
+                    table[hashIndex][i] = null;
                     size--;
-                    counts[hash]--;
-                    if(counts[hash] == table[hash].length/2){
-                        Entry[] chain = new Entry[counts[hash]];
-                        System.arraycopy(table[hash],0,chain,0,counts[hash]);
-                        table[hash] = chain;
+                    counts[hashIndex]--;
+                    // if number of items in the chain is half its length
+                    // make the chains length a half of the original
+                    // and copy the values over
+                    // G
+                    if(counts[hashIndex] == table[hashIndex].length/2 && counts[hashIndex] >= 5){
+                        Entry[] chain = new Entry[counts[hashIndex]];
+                        System.arraycopy(table[hashIndex],0,chain,0,counts[hashIndex]);
+                        table[hashIndex] = chain;
                     }
                     return true;
                 }
@@ -132,8 +139,8 @@ public class ArrayHashTable<K,V> {
      * @param <V>
      */
     private static class Entry<K,V> implements Map.Entry<K,V>{
-        K key;
-        V value;
+        private K key;
+        private V value;
         public Entry(){
             key = null;
             value = null;
@@ -159,7 +166,7 @@ public class ArrayHashTable<K,V> {
         public String toString(){
             String str = "";
             str += "Entry Key : " + key;
-            str += "Entry Value : " + value;
+            str += " Entry Value : " + value;
             return str;
         }
     }
@@ -167,7 +174,7 @@ public class ArrayHashTable<K,V> {
         int[] numbers = new int[n];
         Random rad=new Random();
         for(int j=0;j<n;j++){
-            numbers[j]=Math.abs(rad.nextInt());
+            numbers[j] = Math.abs(rad.nextInt());
         }
         return numbers;
     }
@@ -183,7 +190,7 @@ public class ArrayHashTable<K,V> {
             long t1=System.nanoTime();
 
             for (int c = 0; c < n; c++) {
-                aTable.add(data[c], c);
+                aTable.add(data[c]);
             }
             for (int c = 0; c < n; c++) {
                 aTable.remove((data[c]));
@@ -237,20 +244,57 @@ public class ArrayHashTable<K,V> {
     public String toString(){
         String str = "";
         for(int i=0; i<10; i++){
-            for(int c = 0; c < counts[i]; c++){
-                str += table[i][c];
+            str = str + " Index " + i + " Counts : " + counts[i] + "\n";
+            for(int c = 0; c < table[i].length; c++){
+                if(table[i][c] != null){
+                    str += table[i][c];
+                    str += "\n";
+                }
             }
         }
         return str;
     }
     public static void main(String[] args) {
         ArrayHashTable aTable = new ArrayHashTable();
+        int[] keys = testData(50);
 
+        for(int i=0; i<keys.length; i++){
+            aTable.add(i);
+            if(i == 10) {
+                System.out.println(" REMOVE "+ i +  " size" + aTable.size + aTable );
+            }
+            else if(i == 20) {
+                System.out.println(" REMOVE "+ i +  " size " + aTable.size + aTable );
+            }
+            else if(i == 35) {
+                System.out.println(" REMOVE "+ i +  " size " + aTable.size + aTable );
+            }
+            else if(i == 50) {
+                System.out.println(" REMOVE "+ i +  " size " + aTable.size + aTable );
+            }
+        }
+        for(int i=0; i<keys.length; i++){
+            aTable.remove(i);
+             if(i == 10) {
+                 System.out.println(" REMOVE "+ i +  " size " + aTable.size + aTable );
+            }
+            else if(i == 20) {
+                 System.out.println(" REMOVE  "+ i +  " size " + aTable.size + aTable );
+            }
+            else if(i == 35) {
+                 System.out.println(" REMOVE "+ i +  " size " + aTable.size + aTable );
+            }
+            else if(i == 49) {
+                System.out.println(" REMOVE "+ i +  " size" + aTable.size + aTable );
+            }
+        }
+/*
         try {
             runExperiments(aTable);
         } catch (IOException e) {
             e.printStackTrace();
         }
+*/
 
     }
 

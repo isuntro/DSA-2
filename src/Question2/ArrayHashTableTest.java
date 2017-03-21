@@ -17,7 +17,7 @@ public class ArrayHashTableTest {
             numbers[c] = Math.abs(rad.nextInt());
         }
         for(int i=0; i < n ; i++){
-            table.add(numbers[i],i);
+            table.add(numbers[i]);
         }
         for(int i=0; i < n; i++){
             table.remove(numbers[i]);
