@@ -42,12 +42,10 @@ public class Matrix {
             for (int a : A[c]) {
                 notries++;
                 if (p == a){
-                    //System.out.println(" No tries = " + notries + " found no : " + a);
                     return true;
                 }
             }
         }
-        //System.out.println("Alg 1 No tries = " + notries);
         return false;
     }
 
@@ -61,19 +59,15 @@ public class Matrix {
      * @return - true if found / false otherwise
      */
     public static boolean findElementD1(int A[][], int n, int p){
-        int notries = 0;
         for(int []row : A){
             int max = n-1;
             int min = 0;
             int i;
             if(p <= row[n-1] && p >= row[0]) {
                 while(max >= min){
-                    //notries++;
                     i = (max+min)/2;
                     if(p == row[i]){
-                        //System.out.println(" No tries = " +notries + " found no : " + row[i]);
                         return true;
-
                     }
                     else if ( p < row[i]){
                         max = i - 1;
@@ -84,7 +78,6 @@ public class Matrix {
                 }
             }
         }
-        //System.out.println(" No tries = " + notries);
         return false;
     }
 
@@ -205,7 +198,7 @@ public class Matrix {
                 aMatrix[i][c] = number;
             }
             number = 0;
-            while(number < aMatrix[i][0]){
+            while(number < aMatrix[i][i]){
                 number += rad.nextInt(5);
             }
         }
@@ -328,7 +321,7 @@ public class Matrix {
             e.printStackTrace();
         }
         */
-        Matrix amatrix = new Matrix(randomD2(5,10));
+        Matrix amatrix = new Matrix(randomD2(5,5));
         System.out.println(amatrix);
 
     }

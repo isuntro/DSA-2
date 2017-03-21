@@ -2,7 +2,6 @@ package Question2;
 
 import Question1.Matrix;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
@@ -30,8 +29,7 @@ public class ArrayHashTable<K,V> {
     }
 
     /**
-     *
-     * key
+     * 
      * @param value
      * @return
      */
@@ -44,9 +42,6 @@ public class ArrayHashTable<K,V> {
             table[hashIndex][0] = new Entry(hash,value);
             size++;
             counts[hashIndex]++;
-            if(table[hashIndex][0] == null){
-                System.out.println(" NULL ELEMENT ADDED");
-            }
             return true;
         }
         else
@@ -64,9 +59,6 @@ public class ArrayHashTable<K,V> {
             table[hashIndex][index] = new Entry(hash,value);
             size++;
             counts[hashIndex]++;
-            if(table[hashIndex][index] == null){
-                System.out.println(" NULL ELEMENT ADDED");
-            }
             return true;
         }
         int length = table[hashIndex].length;
@@ -86,6 +78,7 @@ public class ArrayHashTable<K,V> {
 
     /**
      *
+     * @param value
      * @return
      */
     public boolean contains(V value){
@@ -98,11 +91,9 @@ public class ArrayHashTable<K,V> {
         return false;
     }
 
-    /** Wont work cause of implementation of add
-     *  CHANGE IT
-     *  CURRENTLY ADD AND CONTAINS WORKING PROPERLY
-     *  CHECK IF SHOULD BE AS SPECIFICATION
+    /**
      *
+     * @param value
      * @return
      */
     public boolean remove(V value){
@@ -187,21 +178,25 @@ public class ArrayHashTable<K,V> {
         data = testData(n);
         HashSet testSet = new HashSet(10);
         for(int i=0; i<reps; i++) {
-            long t1=System.nanoTime();
+
 
             for (int c = 0; c < n; c++) {
                 aTable.add(data[c]);
             }
+            long t1=System.nanoTime();
+
             for (int c = 0; c < n; c++) {
                 aTable.remove((data[c]));
             }
-
             long t2=System.nanoTime()-t1;
 
-            long t3=System.nanoTime();
+
+
             for (int c = 0; c < n; c++) {
                 testSet.add(data[c]);
             }
+            long t3=System.nanoTime();
+
             for (int c = 0; c < n; c++) {
                 testSet.remove((data[c]));
             }
@@ -236,7 +231,7 @@ public class ArrayHashTable<K,V> {
             }
             else
                 n += 5000;
-            results = experiment(aTable,1000,n);
+            results = experiment(aTable,3000,n);
             Matrix.writeCsv(results, "tableData1.csv");
         }
 
@@ -257,7 +252,7 @@ public class ArrayHashTable<K,V> {
     public static void main(String[] args) {
         ArrayHashTable aTable = new ArrayHashTable();
         int[] keys = testData(50);
-
+/*
         for(int i=0; i<keys.length; i++){
             aTable.add(i);
             if(i == 10) {
@@ -288,13 +283,14 @@ public class ArrayHashTable<K,V> {
                 System.out.println(" REMOVE "+ i +  " size" + aTable.size + aTable );
             }
         }
-/*
+        */
+
         try {
             runExperiments(aTable);
         } catch (IOException e) {
             e.printStackTrace();
         }
-*/
+
 
     }
 
